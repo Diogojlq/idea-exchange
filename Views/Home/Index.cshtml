@@ -1,0 +1,16 @@
+﻿@model IdeaExchange.Models.User
+
+<div class="text-center">
+    <form method="post" action="/UserController/HttpPost">
+        <label>Name:</label>
+        <input type="text" name="Name" />
+
+        <label>Email:</label>
+        <input type="email" name="Email" />
+
+        <label>Password:</label>
+        <input type="password" name="Password" />
+
+        <input type="submit" value="Submit" />
+    </form>
+</div>
