@@ -1,16 +1,11 @@
-﻿@model IdeaExchange.Models.User
+﻿@model List<IdeaExchange.Models.Publication>
 
-<div class="text-center">
-    <form method="post" action="/UserController/HttpPost">
-        <label>Name:</label>
-        <input type="text" name="Name" />
-
-        <label>Email:</label>
-        <input type="email" name="Email" />
-
-        <label>Password:</label>
-        <input type="password" name="Password" />
-
-        <input type="submit" value="Submit" />
-    </form>
-</div>
+<h1>See the users publications, and <a asp-controller="ApplicationUser" asp-action="Register">register</a> to <a asp-controller="Publication" asp-action="CreatePublication">create a new one</a>.</h1>
+    @foreach (var publication in Model)
+    {
+    <div class="publication-box">
+        <h2>@publication.Title</h2>
+        <p>@publication.Content</p>
+        <p>@publication.Date</p>
+    </div>
+    }

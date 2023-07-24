@@ -1,4 +1,6 @@
 using IdeaExchange.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace IdeaExchange
@@ -9,11 +11,24 @@ namespace IdeaExchange
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            builder.Services.AddDbContext<IdeaExchangeContext>(x => x.UseNpgsql(connectionString));
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+            builder.Services.AddAuthentication(options =>
+
+            {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddCookie();
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            .AddEntityFrameworkStores<IdeaExchangeContext>()
+            .AddDefaultTokenProviders();
+
             builder.Services.AddControllersWithViews();
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            builder.Services.AddDbContext<UserContext>(x => x.UseNpgsql(connectionString));
 
             var app = builder.Build();
 
@@ -27,21 +42,16 @@ namespace IdeaExchange
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map("/UserController/HttpPost", () => "Enviado com sucesso!");
-
-            });
 
             app.MapControllerRoute(
-                name:"User",
-                pattern: "{controller=User}"
-          ); 
+                name:"Default",
+                pattern: "{Controller}/{action}/{id?}"
+            );
 
             app.Run();
         }
