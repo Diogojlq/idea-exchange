@@ -1,0 +1,29 @@
+﻿@model IdeaExchange.Models.Publication
+@{ 
+    ViewData["Title"] = "Publication";
+}
+
+<div class="publication-box">
+    <p>Created by
+        <a asp-controller="ApplicationUser" asp-action="UserProfile" asp-route-id="@Model.AuthorId"> 
+            @Model.Author
+        </a>
+    </p>
+    <h3>@Model.Title</h3>
+    <div>@Model.Content</div>
+    <p>@Model.Date</p>
+    <p><a asp-controller="Comment" asp-action="Comment">Comment</a></p>
+</div>
+<div>
+    <h5>
+    New comment :
+    </h5>
+        <div class="text-center">
+            <form method="post" action="/comment/postcomment">
+                <label>Comment:</label>
+                <input type="text" name="Content" />
+                <input type="hidden" name="PublicationId" value="@Model.Id">    
+                <input type="submit" value="Submit" />
+            </form>
+        </div>
+</div>

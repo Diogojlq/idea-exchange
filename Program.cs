@@ -1,5 +1,9 @@
 using IdeaExchange.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
 
 namespace IdeaExchange
 {
@@ -9,11 +13,25 @@ namespace IdeaExchange
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
-
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-            builder.Services.AddDbContext<UserContext>(x => x.UseNpgsql(connectionString));
+            builder.Services.AddDbContext<IdeaExchangeContext>(x => x.UseNpgsql(connectionString));
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
+                options => options.SignIn.RequireConfirmedEmail = false)
+            .AddEntityFrameworkStores<IdeaExchangeContext>()
+            .AddDefaultTokenProviders();
+
+            builder.Services.AddAuthentication()
+            .AddCookie();
+
+            builder.Services.ConfigureApplicationCookie(opts =>
+            {
+                opts.LoginPath = "/ApplicationUser/Login";
+
+            });
+
+            builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
@@ -27,23 +45,30 @@ namespace IdeaExchange
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
+            Log.Logger = new LoggerConfiguration()
+             .MinimumLevel.Information() // Set the minimum log level
+             .WriteTo.File("logs/myapp-{Date}.log", LogEventLevel.Information)
+             .CreateLogger();
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map("/UserController/HttpPost", () => "Enviado com sucesso!");
-
-            });
+            app.MapControllerRoute(
+                name: "Default",
+                pattern: "{Controller}/{action}/{id?}"
+            );
 
             app.MapControllerRoute(
-                name:"User",
-                pattern: "{controller=User}"
-          ); 
+            name: "publicationDetails",
+            pattern: "Publication/Details/{id}",
+            defaults: new { controller = "Publication", action = "Details" }
+            );
 
             app.Run();
+
+            Log.CloseAndFlush();
         }
 
     }

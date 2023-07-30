@@ -1,0 +1,17 @@
+﻿@model RegisterViewModel
+
+<h1>Register :</h1>
+<div class="text-center">
+    <form method="post" action="/register/post">
+        <label>Name:</label>
+        <input type="text" name="UserName" />
+
+        <label>Email:</label>
+        <input type="email" name="Email" />
+
+        <label>Password:</label>
+        <input type="password" name="Password" />
+
+        <input type="submit" value="Submit" action="/register/post" />
+    </form>
+</div>

@@ -1,0 +1,8 @@
+C:\aspnetcore\IdeaExchange\obj\Debug\net6.0\IdeaExchange.csproj.AssemblyReference.cache
+C:\aspnetcore\IdeaExchange\obj\Debug\net6.0\IdeaExchange.GeneratedMSBuildEditorConfig.editorconfig
+C:\aspnetcore\IdeaExchange\obj\Debug\net6.0\IdeaExchange.AssemblyInfoInputs.cache
+C:\aspnetcore\IdeaExchange\obj\Debug\net6.0\IdeaExchange.AssemblyInfo.cs
+C:\aspnetcore\IdeaExchange\obj\Debug\net6.0\IdeaExchange.csproj.CoreCompileInputs.cache
+C:\aspnetcore\IdeaExchange\obj\Debug\net6.0\IdeaExchange.MvcApplicationPartsAssemblyInfo.cache
+C:\aspnetcore\IdeaExchange\obj\Debug\net6.0\IdeaExchange.RazorAssemblyInfo.cache
+C:\aspnetcore\IdeaExchange\obj\Debug\net6.0\IdeaExchange.RazorAssemblyInfo.cs
