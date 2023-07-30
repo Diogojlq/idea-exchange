@@ -1,1 +1,9 @@
-﻿<h1>FAILED LOGIN ATTEMPT</h1>
+﻿@model IdeaExchange.Models.LoginViewModel
+@{ 
+    ViewData["Title"] = "Login Failed";
+}
+
+<h1>Login Failed</h1>
+
+<p class="text-danger">@(ViewData.ModelState[string.Empty]?.Errors?[0]?.ErrorMessage)</p>
+<p>Please try again or contact support if you continue to experience login issues.</p>

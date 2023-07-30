@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Serilog;
+using Serilog.Events;
+using System.Security.Claims;
 
 namespace IdeaExchange.Controllers
 {
@@ -10,11 +12,14 @@ namespace IdeaExchange.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ILogger<ApplicationUser> _logger;
 
-        public ApplicationUserController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+        public ApplicationUserController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager,
+            ILogger<ApplicationUser> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -40,11 +45,14 @@ namespace IdeaExchange.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Login", "ApplicationUser");
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    Log.Information("User registered successfully: {UserName}", user.UserName);
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    return View(result.Errors.Select(e => e.Description));
+                    Log.Error("User registration failed for {UserName}: {Errors}", user.UserName, result.Errors.Select(e => e.Description));
+                    return View("Error", result.Errors.Select(e => e.Description));
                 }
             }
             else
@@ -66,15 +74,21 @@ namespace IdeaExchange.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, lockoutOnFailure: false);
-                
-                if (result.Succeeded)
+                var user = await _userManager.FindByNameAsync(model.Username);
+
+                if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
                 {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    Log.Information("Login successful for user: {Username}", model.Username);
+
                     return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    return View("LoginFailed");
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    Log.Warning("Login failed for user: {Username}", model.Username);
+                    return View("LoginFailed", model);
                 }
             }
             else
@@ -85,9 +99,43 @@ namespace IdeaExchange.Controllers
 
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
+            try
+            {
+                await _signInManager.SignOutAsync();
 
-            return RedirectToAction("Index", "Home");
+                Log.Information("Successful logout");
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning("Logout failed");
+                return View("Error", ex);
+            }
+        }
+
+        [Route("applicationuser/userprofile/{id}")]
+        public async Task<IActionResult> UserProfile(string Id)
+        {
+            if (string.IsNullOrEmpty(Id))
+            {
+                Log.Warning("Null userId");
+                return BadRequest();
+            }
+
+            var user = await _userManager.FindByIdAsync(Id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var userProfileViewModel = new UserProfileViewModel
+            {
+                UserName = user.UserName
+            };
+
+            return View(userProfileViewModel);
         }
     }
 }

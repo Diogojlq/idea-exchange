@@ -1,0 +1,15 @@
+﻿@model Comment
+@{
+    ViewData["Title"] = "Create a comment";
+}
+
+<h1>
+    New comment :
+    </h1>
+        <div class="text-center">
+            <form method="post" action="/comment/postcomment">
+                <label>Comment:</label>
+                <input type="text" name="Content" />
+                <input type="submit" value="Submit" action="/comment/postcomment" />
+            </form>
+        </div>

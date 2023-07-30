@@ -1,11 +1,34 @@
-﻿@model List<IdeaExchange.Models.Publication>
+﻿@{
+    ViewData["Title"] = "Home";
+}
+@model List<IdeaExchange.Models.Publication>
 
-<h1>See the users publications, and <a asp-controller="ApplicationUser" asp-action="Register">register</a> to <a asp-controller="Publication" asp-action="CreatePublication">create a new one</a>.</h1>
+@if (User.Identity.IsAuthenticated)
+{
+    <h1>Hello @User.Identity.Name</h1>
+    <h3> <a asp-controller="Publication" asp-action="CreatePublication">Create a new publication</a></h3>
+    <h2><a asp-controller="ApplicationUser" asp-action="Logout">Logout</a></h2>
+}
+else
+{
+    <h1>See the users publications, and <a asp-controller="ApplicationUser" asp-action="Register">register</a> to 
+        <a asp-controller="Publication" asp-action="CreatePublication">create a new one</a>.</h1>
+}
+
+<h2>Latest discussions</h2>
     @foreach (var publication in Model)
     {
     <div class="publication-box">
-        <h2>@publication.Title</h2>
-        <p>@publication.Content</p>
+           <p>Created by <a asp-controller="ApplicationUser" asp-action="UserProfile" asp-route-id="@publication.AuthorId">
+                 @publication.Author
+            </a>
+        </p>
+           <a asp-controller="Publication" asp-action="Details" asp-route-id="@publication.Id">
+                <h3>@publication.Title</h3>
+           </a>
+        <text>@publication.Content</text>
         <p>@publication.Date</p>
+        <a asp-controller="Publication" asp-action="Details" asp-route-id="@publication.Id">Comment this publication</a>
     </div>
+
     }

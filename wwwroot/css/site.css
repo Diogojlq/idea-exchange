@@ -18,7 +18,9 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: black;
+    color: white;
 }
 
 #title {
@@ -31,5 +33,11 @@ body {
     padding: 20px;
     margin: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: #f9f9f9;
+    background-color: #070D0D;
+    word-wrap: break-word;
+}
+
+a {
+    color: white;
+    text-decoration: none;
 }

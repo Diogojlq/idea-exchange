@@ -28,15 +28,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
                             
-                            @if (User.Identity.IsAuthenticated)
+                            @if (User?.Identity?.IsAuthenticated ?? true)
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-controller="ApplicationUser" asp-action="Logout">Logout</a>
                                 </li>
+
                             }
                             else
                             {
@@ -47,6 +45,7 @@
                                     <a class="nav-link text-dark" asp-controller="ApplicationUser" asp-action="Register">Register</a>
                                 </li>
                             }
+
                     </ul>
                 </div>
             </div>
